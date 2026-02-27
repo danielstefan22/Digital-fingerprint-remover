@@ -36,16 +36,28 @@ def evaluate_pdf_risk(pdf_analysis):
     risk_level=""
     if pdf_analysis["creator"] is not None:
         score+=15
-        reasons.append(f"Document created with: {pdf_analysis['creator']}")
-    if pdf_analysis["producer"] is not None:
+        reasons.append(
+            f"Document created with: {pdf_analysis['creator']} "
+            f"(reveals software version and operating system)"
+        )
+    if pdf_analysis["producer"] is not None and pdf_analysis["producer"] != "PyPDF2":
         score+=10
-        reasons.append(f"PDF generated using: {pdf_analysis['producer']}")
+        reasons.append(
+            f"PDF generated using: {pdf_analysis['producer']} "
+            f"(reveals PDF engine and workflow details)"
+        )
     if pdf_analysis["creation_date"] is not None:
         score+=10
-        reasons.append(f"Document creation timestamp exposed: {pdf_analysis['creation_date']}")
+        reasons.append(
+            f"Document creation timestamp exposed: {pdf_analysis['creation_date']} "
+            f"(reveals exact time and timezone of creation)"
+        )
     if pdf_analysis["modification_date"] is not None:
         score+=10
-        reasons.append(f"Document modification timestamp exposed: {pdf_analysis['modification_date']}")
+        reasons.append(
+            f"Document modification timestamp exposed: {pdf_analysis['modification_date']} "
+            f"(reveals editing timeline)"
+        )
     if score == 0:
         risk_level="SAFE"
     elif 0<score<=20:

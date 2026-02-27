@@ -27,9 +27,30 @@ def analyze_pdf_metadata(metadata):
         pdf_analysis["producer"] = metadata["Producer"]
 
     if "CreationDate" in metadata:
-        pdf_analysis["creation_date"] = metadata["CreationDate"]
+        pdf_analysis["creation_date"] = parse_pdf_date(metadata["CreationDate"])
 
     if "ModDate" in metadata:
-        pdf_analysis["modification_date"] = metadata["ModDate"]
+        pdf_analysis["modification_date"] = parse_pdf_date(metadata["ModDate"])
 
     return pdf_analysis
+
+def parse_pdf_date(date_string):
+    if not date_string:
+        return None
+    if date_string.startswith("D"):
+        date_string = date_string[2:]
+        core=date_string[:14]
+        year=core[:4]
+        month=core[4:6]
+        day=core[6:8]
+        hour=core[8:10]
+        minute=core[10:12]
+        second=core[12:14]
+        timezone=date_string[14:]
+        if timezone:
+            timezone_clean=timezone.replace("'","")
+            timezone_clean=timezone_clean[:3]+":"+timezone_clean[3:]
+        else:
+            timezone_clean=""
+        formated=f"{year}-{month}-{day} {hour}:{minute}:{second}"
+        return f"{formated} (UTC{timezone_clean})"
